@@ -47,7 +47,7 @@ Este canvas integra todas as partes do modelo de negócio em uma única visão e
 | - Associações de bairro | - Desenvolvimento da plataforma | **Para Empreendedores:** | - Suporte via chat/comunidade | **1. Empreendedores (MEIs):** |
 | - ONGs de microcrédito | - Gestão da comunidade | - Visibilidade e Educação em Gestão | - Gamificação (engajamento) | - Comércio (padarias, lojas) |
 | - Prefeituras (Secretarias de Desenvolvimento) | - Curadoria de conteúdo educativo | **Para Consumidores:** | - Notificações Push | - Serviços (mecânicos, salões) |
-| - Influenciadores locais | - Marketing e Aquisição | - Descoberta e Apoio ao Comércio Local | - Redes sociais | **2. Consumidores Locais:** |
+| - Influenciadores locais | - Marketing e Aquisição | - Descoberta, Facilitação no porcesso de compra e Apoio ao Comércio Local | - Redes sociais | **2. Consumidores Locais:** |
 | - Fornecedores de tecnologia (Google, AWS) | - Análise de dados | | | - Moradores de bairros |
 | | | | | - Pessoas que valorizam conveniência e impacto social |
 | **Recursos-Chave** | **Canais** | | | |
