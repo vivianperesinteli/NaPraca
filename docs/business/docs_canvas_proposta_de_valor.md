@@ -53,7 +53,7 @@ Este canvas integra todas as partes do modelo de negócio em uma única visão e
 | **Recursos-Chave** | **Canais** | | | |
 | - Plataforma (App e Backend) | - App Stores (Google Play, Apple Store) | | | |
 | - Equipe (Desenvolvimento, Comunidade, Marketing) | - Redes Sociais (Instagram, Facebook) | | | |
-| - Conteúdo Educativo | - Parcerias com associações | | | |
+| - Conteúdo Educativo | - Parcerias com associações e empresas| | | |
 | - Algoritmos de IA e Gamificação | - Marketing de conteúdo (Blog, SEO) | | | |
 | - Marca e Comunidade | - Eventos e workshops locais | | | |
 
