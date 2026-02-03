@@ -9,7 +9,7 @@ export class AuthUseCase {
     const result = await this.authRepository.signUp(data)
     return {
       user: result.user,
-      profile: this.mapProfileModelToEntity(result.profile),
+      profile: result.profile ? this.mapProfileModelToEntity(result.profile) : null,
     }
   }
 
