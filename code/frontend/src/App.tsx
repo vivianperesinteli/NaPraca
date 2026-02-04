@@ -55,6 +55,7 @@ const App = () => (
           <Route path="/consumidor/recompensas" element={<ConsumerRewards />} />
           <Route path="/consumidor/raspadinha" element={<ConsumerScratchCard />} />
           <Route path="/consumidor/mapa" element={<ConsumerMapPage />} />
+          <Route path="/consumidor/comunidade" element={<EntrepreneurCommunity backTo="/consumidor" />} />
           <Route path="/negocio/:id" element={<BusinessProfile />} />
           
           {/* Entrepreneur Routes */}

@@ -73,7 +73,12 @@ const categoryColors = {
   "Receita": "bg-success/10 text-success",
 };
 
-export default function EntrepreneurCommunity() {
+interface CommunityProps {
+  /** Link "voltar" (ex: /consumidor ou /empreendedor) */
+  backTo?: string;
+}
+
+export default function EntrepreneurCommunity({ backTo = "/empreendedor" }: CommunityProps) {
   const [activeTab, setActiveTab] = useState<"forum" | "tips" | "support">("forum");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -82,7 +87,7 @@ export default function EntrepreneurCommunity() {
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-4">
         <div className="flex items-center gap-4 mb-4">
-          <Link to="/empreendedor" className="text-secondary hover:text-secondary/80 transition-colors">
+          <Link to={backTo} className="text-secondary hover:text-secondary/80 transition-colors">
             <ArrowLeft size={24} />
           </Link>
           <h1 className="font-display font-bold text-xl text-foreground">Comunidade</h1>
