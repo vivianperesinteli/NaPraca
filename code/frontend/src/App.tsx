@@ -13,6 +13,7 @@ import ConsumerMissions from "./pages/consumer/Missions";
 import ConsumerProfile from "./pages/consumer/Profile";
 import ConsumerRewards from "./pages/consumer/Rewards";
 import ConsumerScratchCard from "./pages/consumer/ScratchCard";
+import ConsumerMapPage from "./pages/consumer/MapPage";
 import BusinessProfile from "./pages/consumer/BusinessProfile";
 import EntrepreneurDashboard from "./pages/entrepreneur/Dashboard";
 import EntrepreneurMissions from "./pages/entrepreneur/Missions";
@@ -49,6 +50,7 @@ const App = () => (
           <Route path="/consumidor/perfil" element={<ConsumerProfile />} />
           <Route path="/consumidor/recompensas" element={<ConsumerRewards />} />
           <Route path="/consumidor/raspadinha" element={<ConsumerScratchCard />} />
+          <Route path="/consumidor/mapa" element={<ConsumerMapPage />} />
           <Route path="/negocio/:id" element={<BusinessProfile />} />
           
           {/* Entrepreneur Routes */}

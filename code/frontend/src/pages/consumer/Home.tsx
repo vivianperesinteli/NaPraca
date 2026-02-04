@@ -8,6 +8,8 @@ import { CategoryChip } from "@/components/cards/CategoryChip";
 import { Coffee, Utensils, Scissors, ShoppingBag, Wrench, Heart, Cake, Car, Home, MoreHorizontal } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAllBusinesses, searchBusinesses } from "@/services/api";
+import { MapView, type MapMarker } from "@/components/map/MapView";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import type { BusinessModel } from "@backend/data/models/BusinessModel";
 
 import businessBakery from "@/assets/business-bakery.jpg";
@@ -37,11 +39,23 @@ function imageFor(business: BusinessModel, index: number) {
 
 export default function ConsumerHome() {
   const { profile } = useAuth();
+  const { position: userPosition } = useGeolocation();
   const [businesses, setBusinesses] = useState<BusinessModel[]>([]);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showMoreCategories, setShowMoreCategories] = useState(false);
   const navigate = useNavigate();
+
+  const mapMarkers: MapMarker[] = businesses
+    .filter((b) => b.latitude != null && b.longitude != null && b.latitude !== 0 && b.longitude !== 0)
+    .slice(0, 50)
+    .map((b) => ({
+      id: b.id,
+      lat: Number(b.latitude),
+      lng: Number(b.longitude),
+      title: b.name,
+      subtitle: b.category,
+    }));
 
   useEffect(() => {
     if (searchQuery.trim()) {
@@ -152,41 +166,23 @@ export default function ConsumerHome() {
 
       {/* Map Preview */}
       <div className="px-4 mb-4">
-        <div className="relative h-40 rounded-2xl bg-muted overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/10 to-muted">
-            {/* Map placeholder with pins */}
-            <div className="relative w-full h-full">
-              {businesses.slice(0, 3).map((business, index) => (
-                <button
-                  key={business.id}
-                  onClick={() => navigate(`/negocio/${business.id}`)}
-                  className="absolute"
-                  style={{
-                    left: `${20 + index * 25}%`,
-                    top: `${25 + (index % 2) * 30}%`,
-                  }}
-                >
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg bg-primary">
-                    <MapPin size={16} className="text-primary-foreground" />
-                  </div>
-                </button>
-              ))}
-
-              {/* User Location */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <div className="relative">
-                  <div className="w-4 h-4 rounded-full bg-secondary border-2 border-primary-foreground" />
-                  <div className="absolute inset-0 w-4 h-4 rounded-full bg-secondary/50 animate-pulse-location" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Expand Map Button */}
-          <button className="absolute bottom-3 right-3 px-4 py-2 rounded-xl bg-card/90 backdrop-blur shadow-md flex items-center gap-2 hover:bg-card transition-colors">
+        <div className="relative h-40 rounded-2xl overflow-hidden border border-border">
+          <MapView
+            height="100%"
+            className="rounded-2xl"
+            center={userPosition ? [userPosition.lat, userPosition.lng] : undefined}
+            zoom={14}
+            userLocation={userPosition}
+            markers={mapMarkers}
+            onMarkerClick={(id) => navigate(`/negocio/${id}`)}
+          />
+          <Link
+            to="/consumidor/mapa"
+            className="absolute bottom-3 right-3 px-4 py-2 rounded-xl bg-card/90 backdrop-blur shadow-md flex items-center gap-2 hover:bg-card transition-colors"
+          >
             <Navigation size={16} className="text-secondary" />
             <span className="text-sm font-medium text-foreground">Ver mapa</span>
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -234,7 +230,7 @@ export default function ConsumerHome() {
         </Link>
       </div>
 
-      <ConsumerNav activeTab="map" />
+      <ConsumerNav activeTab="home" />
     </div>
   );
 }

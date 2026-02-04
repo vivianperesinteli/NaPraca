@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { Map, Target, User } from "lucide-react";
+import { Home, Map, Target, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { id: "map", label: "Mapa", icon: Map, href: "/consumidor" },
+  { id: "home", label: "Início", icon: Home, href: "/consumidor" },
+  { id: "map", label: "Mapa", icon: Map, href: "/consumidor/mapa" },
   { id: "missions", label: "Missões", icon: Target, href: "/consumidor/missoes" },
   { id: "profile", label: "Perfil", icon: User, href: "/consumidor/perfil" },
 ];

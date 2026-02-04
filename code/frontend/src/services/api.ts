@@ -25,6 +25,53 @@ export async function getBusinessesByEntrepreneur(
   return businessRepo.getByEntrepreneurId(entrepreneurId);
 }
 
+export async function createBusiness(
+  entrepreneurId: string,
+  data: {
+    name: string;
+    description: string;
+    category: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    phone?: string;
+    whatsapp?: string;
+    email?: string;
+    website?: string;
+  }
+): Promise<BusinessModel | null> {
+  if (!businessRepo) return null;
+  try {
+    return await businessRepo.create(entrepreneurId, data);
+  } catch {
+    return null;
+  }
+}
+
+export async function updateBusiness(
+  id: string,
+  data: Partial<{
+    name: string;
+    description: string;
+    category: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    phone: string;
+    whatsapp: string;
+    email: string;
+    website: string;
+    is_active: boolean;
+  }>
+): Promise<BusinessModel | null> {
+  if (!businessRepo) return null;
+  try {
+    return await businessRepo.update(id, data);
+  } catch {
+    return null;
+  }
+}
+
 export async function getMissionsByEntrepreneur(
   entrepreneurId: string
 ): Promise<Mission[]> {
