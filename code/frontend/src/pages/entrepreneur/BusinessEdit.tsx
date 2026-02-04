@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
-import { getBusinessesByEntrepreneur, createBusiness, updateBusiness } from "@/services/api";
+import { getBusinessesByEntrepreneur, createBusiness, updateBusiness, ensureMyProfileId } from "@/services/api";
 import { geocodeAddress } from "@/services/geocode";
 import { MapView } from "@/components/map/MapView";
 import type { BusinessModel } from "@backend/data/models/BusinessModel";
@@ -79,9 +79,20 @@ export default function EntrepreneurBusinessEdit() {
       toast.error("Preencha nome, categoria e endereço.");
       return;
     }
-    if (!entrepreneurId) {
-      toast.error("Não foi possível identificar seu perfil. Faça login novamente como empreendedor.");
-      return;
+    let effectiveEntrepreneurId = entrepreneurId;
+    if (!effectiveEntrepreneurId) {
+      setSaving(true);
+      const profileId = await ensureMyProfileId();
+      setSaving(false);
+      if (!profileId) {
+        if (profile?.profileType === "consumer") {
+          toast.error("Você está logado como consumidor. Saia e entre com uma conta empreendedor.");
+        } else {
+          toast.error("Não foi possível identificar sua conta. Execute o SQL do projeto (supabase-ensure-profile-rpc.sql) no Supabase e tente de novo.");
+        }
+        return;
+      }
+      effectiveEntrepreneurId = profileId;
     }
     setSaving(true);
     try {
@@ -103,7 +114,7 @@ export default function EntrepreneurBusinessEdit() {
           toast.error(updateError ?? "Não foi possível salvar. Tente novamente.");
         }
       } else {
-        const { data: created, error: createError } = await createBusiness(entrepreneurId, {
+        const { data: created, error: createError } = await createBusiness(effectiveEntrepreneurId, {
           name: name.trim(),
           description: description.trim() || "Sem descrição",
           category: category.trim(),
@@ -148,6 +159,14 @@ export default function EntrepreneurBusinessEdit() {
       </div>
 
       <div className="px-4 py-4 space-y-4">
+        {!entrepreneurId && profile?.profileType === "consumer" && (
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+            <p className="text-sm font-medium text-foreground">
+              Você está logado como consumidor. Para cadastrar um negócio, saia e entre com uma conta empreendedor.
+            </p>
+          </div>
+        )}
+
         <div>
           <label className="text-sm font-medium text-foreground mb-2 block">Nome do Negócio</label>
           <div className="relative">

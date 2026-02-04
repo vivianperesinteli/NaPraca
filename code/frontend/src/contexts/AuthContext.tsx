@@ -72,7 +72,7 @@ type AuthContextValue = {
     phone?: string;
   }) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
+  refreshProfile: () => Promise<{ success: boolean; error?: string }>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -85,10 +85,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const refreshProfile = async () => {
+  const refreshProfile = async (): Promise<{ success: boolean; error?: string }> => {
+    if (!authUseCase) return { success: false, error: "Conexão não configurada." };
+    try {
+      const p = await authUseCase.getCurrentProfile();
+      setProfile(p);
+      return { success: true };
+    } catch {
+      try {
+        await authUseCase.ensureProfile();
+        const p = await authUseCase.getCurrentProfile();
+        setProfile(p ?? null);
+        return { success: true };
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        setProfile(null);
+        return { success: false, error: msg };
+      }
+    }
+  };
+
+  const loadProfile = (): void => {
     if (!authUseCase) return;
-    const p = await authUseCase.getCurrentProfile();
-    setProfile(p);
+    authUseCase
+      .getCurrentProfile()
+      .then(setProfile)
+      .catch(() => {
+        if (!authUseCase) return;
+        authUseCase
+          .ensureProfile()
+          .then(() => authUseCase.getCurrentProfile())
+          .then((p) => setProfile(p ?? null))
+          .catch(() => setProfile(null));
+      });
   };
 
   useEffect(() => {
@@ -98,22 +127,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     supabase.auth.getUser().then(({ data: { user: u } }) => {
       setUser(u ?? null);
-      if (u && authUseCase) {
-        authUseCase.getCurrentProfile().then(setProfile).catch(() => setProfile(null));
-      } else {
-        setProfile(null);
-      }
+      if (u) loadProfile();
+      else setProfile(null);
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setUser(session?.user ?? null);
-        if (session?.user && authUseCase) {
-          authUseCase.getCurrentProfile().then(setProfile).catch(() => setProfile(null));
-        } else {
-          setProfile(null);
-        }
+        if (session?.user) loadProfile();
+        else setProfile(null);
       }
     );
 

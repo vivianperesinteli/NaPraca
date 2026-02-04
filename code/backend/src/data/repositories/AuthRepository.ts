@@ -65,6 +65,48 @@ export class AuthRepository {
     return data
   }
 
+  /**
+   * Cria o perfil no banco a partir do usuário logado (user_metadata).
+   * Use quando getCurrentProfile falhar (ex.: trigger não criou o perfil).
+   * Tenta INSERT; se já existir (unique), faz SELECT e retorna.
+   */
+  async ensureProfileFromUser(): Promise<ProfileModel | null> {
+    const { data: { user } } = await this.supabase.auth.getUser()
+    if (!user) return null
+
+    const fullName = (user.user_metadata?.full_name as string) ?? ''
+    const profileType = (user.user_metadata?.profile_type as 'consumer' | 'entrepreneur') ?? 'consumer'
+    const phone = (user.user_metadata?.phone as string) ?? null
+
+    const insertPayload = {
+      user_id: user.id,
+      full_name: fullName || user.email?.split('@')[0] || 'Usuário',
+      email: user.email ?? '',
+      profile_type: profileType,
+      phone,
+    }
+
+    const { data: inserted, error: insertError } = await this.supabase
+      .from('profiles')
+      .insert(insertPayload)
+      .select()
+      .single()
+
+    if (!insertError) return inserted
+
+    const isDuplicate = insertError.code === '23505'
+    if (isDuplicate) {
+      const { data: existing, error: selectError } = await this.supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+      if (!selectError) return existing
+    }
+
+    throw insertError
+  }
+
   async getCurrentUser() {
     const { data: { user } } = await this.supabase.auth.getUser()
     return user

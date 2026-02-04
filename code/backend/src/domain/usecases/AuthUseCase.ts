@@ -27,6 +27,13 @@ export class AuthUseCase {
     return this.mapProfileModelToEntity(profileModel)
   }
 
+  /** Cria o perfil no banco se não existir (a partir do user_metadata). */
+  async ensureProfile(): Promise<Profile | null> {
+    const profileModel = await this.authRepository.ensureProfileFromUser()
+    if (!profileModel) return null
+    return this.mapProfileModelToEntity(profileModel)
+  }
+
   async getCurrentUser() {
     return await this.authRepository.getCurrentUser()
   }
