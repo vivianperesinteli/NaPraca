@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Search, Plus, MessageCircle, Heart, TrendingUp, Crown, Store, ChevronRight } from "lucide-react";
+import { Search, Plus, MessageCircle, Heart, TrendingUp, Crown, Store, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { ConsumerNav } from "@/components/layout/ConsumerNav";
@@ -90,10 +90,7 @@ export default function EntrepreneurCommunity({ backTo = "/empreendedor" }: Comm
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-4">
-        <div className="flex items-center gap-4 mb-4">
-          <Link to={backTo} className="text-secondary hover:text-secondary/80 transition-colors">
-            <ArrowLeft size={24} />
-          </Link>
+        <div className="mb-4">
           <h1 className="font-display font-bold text-xl text-foreground">Praça</h1>
         </div>
 

@@ -24,6 +24,7 @@ import EntrepreneurAnalytics from "./pages/entrepreneur/Analytics";
 import EntrepreneurCommunity from "./pages/entrepreneur/Community";
 import EntrepreneurPost from "./pages/entrepreneur/Post";
 import EntrepreneurManagement from "./pages/entrepreneur/Management";
+import EntrepreneurAssistant from "./pages/entrepreneur/Assistant";
 import Notifications from "./pages/shared/Notifications";
 import Settings from "./pages/shared/Settings";
 import NotFound from "./pages/NotFound";
@@ -68,6 +69,7 @@ const App = () => (
           <Route path="/empreendedor/comunidade" element={<EntrepreneurCommunity />} />
           <Route path="/empreendedor/postar" element={<EntrepreneurPost />} />
           <Route path="/empreendedor/gestao" element={<EntrepreneurManagement />} />
+          <Route path="/empreendedor/assistente" element={<EntrepreneurAssistant />} />
           
           {/* Shared Routes */}
           <Route path="/notificacoes" element={<Notifications />} />
