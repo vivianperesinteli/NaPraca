@@ -78,26 +78,36 @@ export default function EntrepreneurAssistant() {
 
   const scrollToBottom = () => listEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  // Carregar histórico do Supabase quando o perfil estiver disponível
+  // Carregar histórico do Supabase (usar o mesmo id que o backend usa para RLS)
   useEffect(() => {
-    const userId = profile?.id;
-    if (!userId) {
-      setLoadingHistory(false);
-      return;
-    }
-    if (loadedForUserRef.current === userId) return;
-    loadedForUserRef.current = userId;
-    setLoadingHistory(true);
-    getAssistantMessages(userId)
-      .then((rows) => {
+    let cancelled = false;
+    const load = async () => {
+      const userId = (await ensureMyProfileId()) ?? profile?.id;
+      if (!userId) {
+        setLoadingHistory(false);
+        return;
+      }
+      if (loadedForUserRef.current === userId) return;
+      loadedForUserRef.current = userId;
+      setLoadingHistory(true);
+      try {
+        const rows = await getAssistantMessages(userId);
+        if (cancelled) return;
         if (rows.length === 0) {
           setMessages([initialMessage]);
         } else {
           setMessages(rows.map(rowToMessage));
         }
-      })
-      .catch(() => setMessages([initialMessage]))
-      .finally(() => setLoadingHistory(false));
+      } catch {
+        if (!cancelled) setMessages([initialMessage]);
+      } finally {
+        if (!cancelled) setLoadingHistory(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [profile?.id]);
 
   useEffect(() => {
@@ -108,7 +118,8 @@ export default function EntrepreneurAssistant() {
     const text = inputValue.trim();
     if (!text) return;
 
-    const profileId = profile?.id ?? (await ensureMyProfileId());
+    // Usar sempre o id retornado pelo Supabase (ensure_my_profile) para o insert passar no RLS
+    const profileId = (await ensureMyProfileId()) ?? profile?.id;
     if (!profileId) {
       toast({
         title: "Não foi possível enviar",
@@ -124,6 +135,13 @@ export default function EntrepreneurAssistant() {
     try {
       // Insere mensagem do usuário no Supabase e adiciona no estado
       const userRow = await insertAssistantMessage(profileId, "user", text);
+      if (!userRow) {
+        toast({
+          title: "Conversa não salva",
+          description: "Não foi possível salvar no servidor. Verifique sua conexão e tente novamente.",
+          variant: "destructive",
+        });
+      }
       const userMsg: Message = {
         id: userRow?.id ?? `u-${Date.now()}`,
         role: "user",
@@ -154,6 +172,13 @@ export default function EntrepreneurAssistant() {
         "assistant",
         assistantContent
       );
+      if (!assistantRow && userRow) {
+        toast({
+          title: "Resposta não salva",
+          description: "Sua mensagem foi salva, mas a resposta não. Tente recarregar o histórico depois.",
+          variant: "destructive",
+        });
+      }
       const assistantMsg: Message = {
         id: assistantRow?.id ?? `a-${Date.now()}`,
         role: "assistant",
@@ -190,8 +215,8 @@ export default function EntrepreneurAssistant() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {/* Header */}
-      <div className="flex-shrink-0 bg-card border-b border-border px-4 py-4">
+      {/* Header fixo no topo */}
+      <div className="sticky top-0 z-10 flex-shrink-0 bg-card border-b border-border px-4 py-4">
         <div className="flex items-center gap-4">
           <Link
             to="/empreendedor"

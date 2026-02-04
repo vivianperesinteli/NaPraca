@@ -311,7 +311,7 @@ export async function getAssistantMessages(
   return (data ?? []) as AssistantMessageRow[];
 }
 
-/** Insere uma mensagem no histórico do assistente. */
+/** Insere uma mensagem no histórico do assistente. Retorna erro se falhar (ex: RLS). */
 export async function insertAssistantMessage(
   profileId: string,
   role: "user" | "assistant",
@@ -323,6 +323,9 @@ export async function insertAssistantMessage(
     .insert({ profile_id: profileId, role, content })
     .select("id, created_at")
     .single();
-  if (error) return null;
+  if (error) {
+    console.warn("[Assistant] insertAssistantMessage failed:", error.message, error.code);
+    return null;
+  }
   return data as { id: string; created_at: string };
 }
