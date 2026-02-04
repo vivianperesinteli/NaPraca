@@ -54,14 +54,16 @@ export default function ConsumerMapPage() {
         </div>
       )}
 
-      <div className="flex-1 min-h-[400px] px-4 py-4">
-        <MapView
-          className="min-h-[400px]"
-          height="100%"
-          userLocation={userPosition}
-          markers={markers}
-          onMarkerClick={(id) => navigate(`/negocio/${id}`)}
-        />
+      <div className="flex-1 w-full px-4 py-4 flex flex-col min-h-0">
+        <div className="flex-1 w-full rounded-2xl overflow-hidden" style={{ minHeight: 400 }}>
+          <MapView
+            className="w-full h-full rounded-2xl overflow-hidden"
+            height="500px"
+            userLocation={userPosition}
+            markers={markers}
+            onMarkerClick={(id) => navigate(`/negocio/${id}`)}
+          />
+        </div>
       </div>
 
       <div className="px-4 pb-2 shrink-0">
