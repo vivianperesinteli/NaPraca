@@ -177,13 +177,13 @@ export default function Cadastro() {
           </button>
           <span className="text-sm text-muted-foreground">
             Li e aceito os{" "}
-            <button type="button" className="text-primary hover:underline">
+            <Link to="/termos-de-uso" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
               Termos de Uso
-            </button>{" "}
+            </Link>{" "}
             e a{" "}
-            <button type="button" className="text-primary hover:underline">
+            <Link to="/politica-de-privacidade" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
               Política de Privacidade
-            </button>
+            </Link>
           </span>
         </div>
 

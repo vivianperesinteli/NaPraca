@@ -33,21 +33,26 @@ function getErrorMessage(e: unknown): string {
   return "Erro ao processar. Tente novamente.";
 }
 
-/** Primeiro nome para exibir (ex: "Olá, Maria!"). Usa perfil, depois user_metadata, depois fallback. */
+/** Primeiro nome para exibir (ex: "Olá, Maria!"). Perfil → user_metadata → e-mail → fallback por tipo. */
 function getDisplayFirstName(user: User | null, profile: Profile | null): string {
   const fromProfile = profile?.fullName?.trim();
   const fromMeta = (user?.user_metadata?.full_name as string)?.trim();
   const full = fromProfile || fromMeta || "";
   const first = full.split(/\s+/)[0];
   if (first) return first;
+  const fromEmail = (user?.email ?? "").split("@")[0].trim();
+  if (fromEmail) return fromEmail;
   return profile?.profileType === "entrepreneur" ? "Empreendedor" : "Consumidor";
 }
 
-/** Nome completo para exibir. */
+/** Nome completo para exibir. Perfil → user_metadata → e-mail → fallback por tipo. */
 function getDisplayFullName(user: User | null, profile: Profile | null): string {
   const fromProfile = profile?.fullName?.trim();
   const fromMeta = (user?.user_metadata?.full_name as string)?.trim();
-  return fromProfile || fromMeta || (profile?.profileType === "entrepreneur" ? "Empreendedor" : "Consumidor");
+  if (fromProfile || fromMeta) return fromProfile || fromMeta || "";
+  const fromEmail = (user?.email ?? "").split("@")[0].trim();
+  if (fromEmail) return fromEmail;
+  return profile?.profileType === "entrepreneur" ? "Empreendedor" : "Consumidor";
 }
 
 type AuthContextValue = {

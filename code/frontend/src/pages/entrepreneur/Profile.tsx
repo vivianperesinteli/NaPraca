@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Store, BarChart3, Users, HelpCircle, Settings, LogOut, ChevronRight, Target } from "lucide-react";
+import { Store, BarChart3, Users, HelpCircle, Settings, LogOut, ChevronRight, Target, MessageSquare, Package } from "lucide-react";
 import { EntrepreneurNav } from "@/components/layout/EntrepreneurNav";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,7 +52,7 @@ export default function EntrepreneurProfile() {
       </div>
 
       {/* Business Card */}
-      <div className="px-4 -mt-6">
+      <div className="px-4 -mt-6 space-y-3">
         <Link to="/empreendedor/negocio">
           <div className="p-4 rounded-2xl bg-gradient-to-br from-secondary to-earth text-secondary-foreground">
             <div className="flex items-center gap-3">
@@ -67,6 +67,40 @@ export default function EntrepreneurProfile() {
             </div>
           </div>
         </Link>
+
+        {/* Publicar post e Catálogo - só quando tiver negócio */}
+        {businesses.length > 0 && (
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              to="/empreendedor/negocio?tab=feed"
+              className="p-4 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-primary/5 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <MessageSquare size={20} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground text-sm">Publicar no feed</p>
+                  <p className="text-xs text-muted-foreground truncate">Nova publicação</p>
+                </div>
+              </div>
+            </Link>
+            <Link
+              to="/empreendedor/negocio?tab=catalog"
+              className="p-4 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-primary/5 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Package size={20} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground text-sm">Catálogo</p>
+                  <p className="text-xs text-muted-foreground truncate">Produtos e serviços</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Stats */}

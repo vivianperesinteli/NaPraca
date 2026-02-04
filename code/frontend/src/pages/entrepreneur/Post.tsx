@@ -1,9 +1,13 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, Camera, Image, Sparkles, Send, X, Lightbulb } from "lucide-react";
+import { useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Camera, Image, Sparkles, Send, X, Lightbulb, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { getBusinessesByEntrepreneur, createBusinessPost } from "@/services/api";
+import { uploadBusinessImage } from "@/services/upload";
 
 const dailyMission = {
   title: "Post do Dia",
@@ -20,12 +24,33 @@ const postSuggestions = [
 ];
 
 export default function EntrepreneurPost() {
+  const navigate = useNavigate();
+  const { profile } = useAuth();
   const [postText, setPostText] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleSuggestionClick = (text: string) => {
     setPostText(text);
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !file.type.startsWith("image/")) return;
+    if (selectedImage) URL.revokeObjectURL(selectedImage);
+    setSelectedImage(URL.createObjectURL(file));
+    setSelectedImageFile(file);
+  };
+
+  const handleRemoveImage = () => {
+    if (selectedImage) URL.revokeObjectURL(selectedImage);
+    setSelectedImage(null);
+    setSelectedImageFile(null);
   };
 
   const handleGenerateWithAI = async () => {
@@ -35,6 +60,46 @@ export default function EntrepreneurPost() {
       setPostText("✨ Hoje preparamos algo especial para vocês! Nosso pão artesanal com fermentação natural está pronto e esperando por você. Venha sentir esse aroma incrível! 🥖💛 #PadariaLocal #FeitoComAmor");
       setIsGenerating(false);
     }, 1500);
+  };
+
+  const handlePublish = async () => {
+    if (!postText.trim()) return;
+    const entrepreneurId = profile?.profileType === "entrepreneur" ? profile?.id : null;
+    if (!entrepreneurId) {
+      toast.error("Faça login como empreendedor para publicar.");
+      navigate("/empreendedor/negocio?tab=feed");
+      return;
+    }
+    setIsPublishing(true);
+    try {
+      const businesses = await getBusinessesByEntrepreneur(entrepreneurId);
+      const business = businesses[0];
+      if (!business) {
+        toast.error("Cadastre seu negócio em Meu Negócio para publicar.");
+        navigate("/empreendedor/negocio?tab=feed");
+        return;
+      }
+      let imageUrl: string | undefined;
+      if (selectedImageFile) {
+        try {
+          imageUrl = (await uploadBusinessImage(selectedImageFile, business.id, "posts")) ?? undefined;
+        } catch {
+          toast.error("Falha ao enviar imagem. Publicando só o texto.");
+        }
+      }
+      const { data, error } = await createBusinessPost(business.id, {
+        text: postText.trim(),
+        image_url: imageUrl,
+      });
+      if (data) {
+        toast.success("Post publicado! Aparece no feed do seu negócio.");
+        navigate("/empreendedor/negocio?tab=feed");
+      } else {
+        toast.error(error ?? "Não foi possível publicar. Tente de novo.");
+      }
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -48,9 +113,13 @@ export default function EntrepreneurPost() {
             </Link>
             <h1 className="font-display font-bold text-xl text-foreground">Criar Post</h1>
           </div>
-          <Button disabled={!postText.trim()} className="rounded-full px-6">
-            <Send size={16} className="mr-2" />
-            Publicar
+          <Button
+            disabled={!postText.trim() || isPublishing}
+            className="rounded-full px-6"
+            onClick={handlePublish}
+          >
+            {isPublishing ? <Loader2 size={16} className="mr-2 animate-spin" /> : <Send size={16} className="mr-2" />}
+            {isPublishing ? "Publicando..." : "Publicar"}
           </Button>
         </div>
       </div>
@@ -78,23 +147,50 @@ export default function EntrepreneurPost() {
 
       {/* Image Upload */}
       <div className="px-4 mb-4">
+        <input
+          ref={galleryInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          className="sr-only"
+          aria-hidden
+          onChange={handleImageSelect}
+        />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          capture="environment"
+          className="sr-only"
+          aria-hidden
+          onChange={handleImageSelect}
+        />
         {selectedImage ? (
           <div className="relative rounded-2xl overflow-hidden">
             <img src={selectedImage} alt="Preview" className="w-full h-48 object-cover" />
-            <button 
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-2 right-2 w-8 h-8 rounded-full bg-foreground/80 flex items-center justify-center"
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              className="absolute top-2 right-2 w-8 h-8 rounded-full bg-foreground/80 flex items-center justify-center hover:bg-foreground transition-colors"
+              aria-label="Remover imagem"
             >
               <X size={16} className="text-background" />
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
-            <button className="h-24 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors">
+            <button
+              type="button"
+              onClick={() => cameraInputRef.current?.click()}
+              className="h-24 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors"
+            >
               <Camera size={24} className="text-muted-foreground" />
               <span className="text-sm text-muted-foreground">Tirar Foto</span>
             </button>
-            <button className="h-24 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors">
+            <button
+              type="button"
+              onClick={() => galleryInputRef.current?.click()}
+              className="h-24 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors"
+            >
               <Image size={24} className="text-muted-foreground" />
               <span className="text-sm text-muted-foreground">Galeria</span>
             </button>

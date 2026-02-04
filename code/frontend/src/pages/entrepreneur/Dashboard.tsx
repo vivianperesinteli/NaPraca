@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, ChevronRight, Lightbulb, TrendingUp, PenSquare, BarChart3, Users, Sparkles } from "lucide-react";
+import { Eye, ChevronRight, Lightbulb, TrendingUp, PenSquare, BarChart3, Users, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EntrepreneurNav } from "@/components/layout/EntrepreneurNav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -173,17 +173,25 @@ export default function EntrepreneurDashboard() {
           </Link>
         </div>
 
-        {/* AI Trail CTA */}
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-earth to-earth/80 text-earth-foreground">
+        {/* AI Trail CTA - Bloqueado */}
+        <div className="p-4 rounded-2xl bg-muted border border-border opacity-75 pointer-events-none select-none">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-earth-foreground/20 flex items-center justify-center">
-              <Sparkles size={24} />
+            <div className="w-12 h-12 rounded-xl bg-muted-foreground/10 flex items-center justify-center">
+              <Sparkles size={24} className="text-muted-foreground" />
             </div>
             <div className="flex-1">
-              <h3 className="font-display font-bold">Trilha IA de Conteúdo</h3>
-              <p className="text-sm opacity-90">
+              <div className="flex items-center gap-2">
+                <h3 className="font-display font-bold text-muted-foreground">Trilha IA de Conteúdo</h3>
+                <span className="px-2 py-0.5 rounded-md bg-muted-foreground/20 text-xs font-medium text-muted-foreground">
+                  Bloqueado
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-0.5">
                 Complete missões e desbloqueie sua trilha personalizada!
               </p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-muted-foreground/20 flex items-center justify-center shrink-0">
+              <Lock size={20} className="text-muted-foreground" />
             </div>
           </div>
         </div>
