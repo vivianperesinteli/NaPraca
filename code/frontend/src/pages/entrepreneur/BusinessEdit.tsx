@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   Store,
@@ -13,6 +13,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  ImagePlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ import {
   getReviewStatsByBusiness,
 } from "@/services/api";
 import { geocodeAddress } from "@/services/geocode";
+import { uploadBusinessImage } from "@/services/upload";
 import { MapView } from "@/components/map/MapView";
 import { cn } from "@/lib/utils";
 import type { BusinessModel } from "@backend/data/models/BusinessModel";
@@ -69,11 +71,15 @@ type TabId = "dados" | "catalog" | "feed" | "reviews";
 
 export default function EntrepreneurBusinessEdit() {
   const { profile } = useAuth();
+  const [searchParams] = useSearchParams();
   const [business, setBusiness] = useState<BusinessModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [geocoding, setGeocoding] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>("dados");
+  const tabFromUrl = searchParams.get("tab") as TabId | null;
+  const [activeTab, setActiveTab] = useState<TabId>(
+    tabFromUrl && ["dados", "catalog", "feed", "reviews"].includes(tabFromUrl) ? tabFromUrl : "dados"
+  );
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -98,15 +104,22 @@ export default function EntrepreneurBusinessEdit() {
     category: "Geral",
   });
   const [catalogSaving, setCatalogSaving] = useState(false);
+  const [catalogImageUploading, setCatalogImageUploading] = useState(false);
   const [deleteCatalogId, setDeleteCatalogId] = useState<string | null>(null);
 
   const [postDialogOpen, setPostDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BusinessPostModel | null>(null);
   const [postForm, setPostForm] = useState({ text: "", image_url: "" });
   const [postSaving, setPostSaving] = useState(false);
+  const [postImageUploading, setPostImageUploading] = useState(false);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
 
   const entrepreneurId = profile?.profileType === "entrepreneur" ? profile?.id : null;
+
+  useEffect(() => {
+    const tab = searchParams.get("tab") as TabId | null;
+    if (tab && ["dados", "catalog", "feed", "reviews"].includes(tab)) setActiveTab(tab);
+  }, [searchParams]);
 
   useEffect(() => {
     if (!entrepreneurId) {
@@ -264,6 +277,22 @@ export default function EntrepreneurBusinessEdit() {
     setCatalogDialogOpen(true);
   };
 
+  const handleCatalogImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !business?.id) return;
+    e.target.value = "";
+    setCatalogImageUploading(true);
+    try {
+      const url = await uploadBusinessImage(file, business.id, "catalog");
+      if (url) setCatalogForm((f) => ({ ...f, image_url: url }));
+      else toast.error("Falha ao enviar imagem.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao enviar imagem.");
+    } finally {
+      setCatalogImageUploading(false);
+    }
+  };
+
   const saveCatalogItem = async () => {
     if (!business?.id) return;
     const price = parseFloat(catalogForm.price.replace(",", "."));
@@ -325,6 +354,22 @@ export default function EntrepreneurBusinessEdit() {
       setPostForm({ text: "", image_url: "" });
     }
     setPostDialogOpen(true);
+  };
+
+  const handlePostImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !business?.id) return;
+    e.target.value = "";
+    setPostImageUploading(true);
+    try {
+      const url = await uploadBusinessImage(file, business.id, "posts");
+      if (url) setPostForm((f) => ({ ...f, image_url: url }));
+      else toast.error("Falha ao enviar imagem.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao enviar imagem.");
+    } finally {
+      setPostImageUploading(false);
+    }
   };
 
   const savePost = async () => {
@@ -673,12 +718,50 @@ export default function EntrepreneurBusinessEdit() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">URL da imagem (opcional)</label>
+              <label className="text-sm font-medium mb-1 block">Imagem (opcional)</label>
+              {catalogForm.image_url ? (
+                <div className="space-y-2">
+                  <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-muted border border-border">
+                    <img src={catalogForm.image_url} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <label className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-muted/50 text-sm font-medium cursor-pointer hover:bg-muted">
+                      {catalogImageUploading ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
+                      <span>{catalogImageUploading ? "Enviando..." : "Trocar imagem"}</span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        className="sr-only"
+                        disabled={catalogImageUploading}
+                        onChange={handleCatalogImageFile}
+                      />
+                    </label>
+                    <Button type="button" variant="ghost" size="sm" className="rounded-xl" onClick={() => setCatalogForm((f) => ({ ...f, image_url: "" }))}>
+                      Remover
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <label className="flex items-center justify-center gap-2 w-full px-3 py-4 rounded-xl border border-dashed border-border bg-muted/30 text-sm text-muted-foreground cursor-pointer hover:bg-muted/50 transition-colors">
+                    {catalogImageUploading ? <Loader2 size={20} className="animate-spin" /> : <ImagePlus size={20} />}
+                    <span>{catalogImageUploading ? "Enviando imagem..." : "Enviar imagem do dispositivo"}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="sr-only"
+                      disabled={catalogImageUploading}
+                      onChange={handleCatalogImageFile}
+                    />
+                  </label>
+                  <p className="text-xs text-muted-foreground">JPG, PNG, WebP ou GIF. Máx. 5 MB.</p>
+                </div>
+              )}
               <Input
                 value={catalogForm.image_url}
                 onChange={(e) => setCatalogForm((f) => ({ ...f, image_url: e.target.value }))}
-                placeholder="https://..."
-                className="rounded-xl"
+                placeholder="Ou cole a URL da imagem"
+                className="rounded-xl mt-2"
               />
             </div>
           </div>
@@ -710,12 +793,50 @@ export default function EntrepreneurBusinessEdit() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">URL da imagem (opcional)</label>
+              <label className="text-sm font-medium mb-1 block">Imagem (opcional)</label>
+              {postForm.image_url ? (
+                <div className="space-y-2">
+                  <div className="relative w-full h-36 rounded-xl overflow-hidden bg-muted border border-border">
+                    <img src={postForm.image_url} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <label className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-muted/50 text-sm font-medium cursor-pointer hover:bg-muted">
+                      {postImageUploading ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
+                      <span>{postImageUploading ? "Enviando..." : "Trocar imagem"}</span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        className="sr-only"
+                        disabled={postImageUploading}
+                        onChange={handlePostImageFile}
+                      />
+                    </label>
+                    <Button type="button" variant="ghost" size="sm" className="rounded-xl" onClick={() => setPostForm((f) => ({ ...f, image_url: "" }))}>
+                      Remover
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <label className="flex items-center justify-center gap-2 w-full px-3 py-4 rounded-xl border border-dashed border-border bg-muted/30 text-sm text-muted-foreground cursor-pointer hover:bg-muted/50 transition-colors">
+                    {postImageUploading ? <Loader2 size={20} className="animate-spin" /> : <ImagePlus size={20} />}
+                    <span>{postImageUploading ? "Enviando imagem..." : "Enviar imagem do dispositivo"}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="sr-only"
+                      disabled={postImageUploading}
+                      onChange={handlePostImageFile}
+                    />
+                  </label>
+                  <p className="text-xs text-muted-foreground">JPG, PNG, WebP ou GIF. Máx. 5 MB.</p>
+                </div>
+              )}
               <Input
                 value={postForm.image_url}
                 onChange={(e) => setPostForm((f) => ({ ...f, image_url: e.target.value }))}
-                placeholder="https://..."
-                className="rounded-xl"
+                placeholder="Ou cole a URL da imagem"
+                className="rounded-xl mt-2"
               />
             </div>
           </div>
