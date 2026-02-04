@@ -2,41 +2,95 @@
 
 Plataforma de escola de negócios gamificada para microempreendedores e mapa inteligente para consumidores locais.
 
-## 🚀 Início Rápido
+## Estrutura do repositório `code/`
+
+```
+code/
+├── backend/          # Lógica de negócio e acesso a dados (Supabase)
+│   ├── src/
+│   │   ├── data/     # Repositórios, modelos, serviços (supabaseClient)
+│   │   └── domain/  # Entidades e use cases
+│   ├── DATABASE_SCHEMA.md
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/         # Aplicação web (React + Vite + Shadcn)
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/ # AuthContext (integra com backend)
+│   │   ├── lib/      # supabase.ts (cliente com import.meta.env)
+│   │   └── pages/
+│   ├── package.json
+│   └── vite.config.ts
+├── DATABASE_SCHEMA.md
+├── package.json      # Scripts raiz (dev, build)
+└── README.md
+```
+
+## Início rápido
+
+### 1. Variáveis de ambiente
+
+No **frontend**, crie `frontend/.env`:
+
+```
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua-anon-key
+```
+
+No **backend** (scripts Node), use `SUPABASE_URL` e `SUPABASE_ANON_KEY` se precisar.
+
+### 2. Instalar dependências
+
+Na raiz de `code/`:
 
 ```bash
-# Instalar dependências
-npm install
+npm run install:all
+```
 
-# Configurar variáveis de ambiente
-# Copie .env.example para .env e preencha com suas credenciais
+Ou em cada pasta:
 
-# Executar em desenvolvimento
+```bash
+cd backend && npm install
+cd ../frontend && npm install
+```
+
+### 3. Rodar o frontend (desenvolvimento)
+
+Na raiz de `code/`:
+
+```bash
 npm run dev
 ```
 
-## 📚 Documentação
+Ou:
 
-- [Documentação Técnica](./README_TECNICO.md) - Arquitetura, estrutura e guia de desenvolvimento
-- [Schema do Banco de Dados](./DATABASE_SCHEMA.md) - Estrutura das tabelas e relacionamentos
+```bash
+cd frontend && npm run dev
+```
 
-## 🛠️ Tecnologias
+Acesse: **http://localhost:8080**
 
-- React + TypeScript + Vite
-- Tailwind CSS (Mobile-First)
-- Supabase (Backend + Auth)
-- Google Maps API
-- Zustand (Estado Global)
+### 4. Build
 
-## 📱 Funcionalidades
+```bash
+npm run build
+```
 
-- ✅ Autenticação (Login/Cadastro)
-- ✅ Mapa interativo com negócios locais
-- ✅ Perfil de negócios com ações rápidas
-- ✅ Dashboard gamificado para empreendedores
-- ✅ Sistema de missões e pontuação
+## Integração frontend ↔ backend
 
-## 📄 Licença
+- O **frontend** importa o backend pelo alias `@backend` (configurado em `frontend/vite.config.ts` e `frontend/tsconfig.app.json`).
+- O cliente Supabase no frontend é criado em `frontend/src/lib/supabase.ts` com `import.meta.env.VITE_SUPABASE_*`.
+- Os repositórios do backend recebem o cliente Supabase por construtor (injeção de dependência), então o frontend instancia `AuthRepository(supabase)`, `AuthUseCase(authRepo)` e usa em `AuthContext` e nas páginas (Login, Cadastro).
+- Login e Cadastro usam autenticação real (Supabase Auth) e redirecionam conforme o tipo de perfil (consumidor → `/consumidor`, empreendedor → `/empreendedor`).
 
-Desenvolvido para fins educacionais.
+## Tecnologias
 
+- **Frontend:** React 18, TypeScript, Vite, Tailwind, Shadcn UI, React Query, React Router.
+- **Backend (camada de dados/domínio):** TypeScript, Supabase (Auth + PostgreSQL).
+- **Banco:** PostgreSQL no Supabase; schema e RLS em `DATABASE_SCHEMA.md`.
+
+## Documentação
+
+- [Schema do Banco de Dados](./DATABASE_SCHEMA.md)
+- [Documentação Técnica](./README_TECNICO.md)
+- [Setup](./SETUP.md)

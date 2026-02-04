@@ -24,6 +24,17 @@ npm install
 5. **Execute o script SQL completo do arquivo `DATABASE_SCHEMA.md`** (inclui tabelas, índices, triggers e políticas RLS)
 6. **Importante**: O script habilita Row Level Security (RLS) em todas as tabelas para garantir segurança dos dados
 
+#### Desativar confirmação de e-mail (entrar sem confirmar)
+
+Para que o usuário possa **entrar na conta logo após o cadastro**, sem precisar clicar no link de confirmação por e-mail:
+
+1. No [Supabase Dashboard](https://app.supabase.com), abra seu projeto
+2. Vá em **Authentication** → **Providers** → **Email**
+3. Desative a opção **"Confirm email"** (toggle off)
+4. Salve
+
+Assim, o login funciona imediatamente após o cadastro.
+
 ### 3. Configurar Google Maps API
 
 1. Acesse o [Google Cloud Console](https://console.cloud.google.com)
