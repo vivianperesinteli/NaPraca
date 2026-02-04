@@ -9,5 +9,8 @@ export class Profile {
     public readonly profileType: ProfileType,
     public readonly phone?: string,
     public readonly avatarUrl?: string,
+    public readonly points?: number,
+    public readonly level?: string,
+    public readonly neighborhood?: string,
   ) {}
 }

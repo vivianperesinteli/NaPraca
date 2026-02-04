@@ -1,11 +1,32 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Play, Upload, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getMissionById, completeMission } from "@/services/api";
+import type { Mission } from "@backend/domain/entities/Mission";
 
 export default function EntrepreneurMissionDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [mission, setMission] = useState<Mission | null>(null);
   const [photoUploaded, setPhotoUploaded] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+    getMissionById(id).then(setMission);
+  }, [id]);
+
+  const handleComplete = async () => {
+    if (!id || !photoUploaded || submitting) return;
+    setSubmitting(true);
+    try {
+      await completeMission(id);
+      navigate("/empreendedor/missoes");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-8">
@@ -15,7 +36,9 @@ export default function EntrepreneurMissionDetail() {
           <Link to="/empreendedor/missoes" className="hover:opacity-80 transition-opacity">
             <ArrowLeft size={24} />
           </Link>
-          <h1 className="font-display font-bold text-lg">Missão 1: Foto da Fachada</h1>
+          <h1 className="font-display font-bold text-lg">
+            {mission ? mission.title : (id ? "Carregando..." : "Missão")}
+          </h1>
         </div>
       </div>
 
@@ -67,7 +90,9 @@ export default function EntrepreneurMissionDetail() {
             <span className="text-primary">Passo 2:</span> Sua Vez!
           </h3>
           <p className="text-muted-foreground text-sm mb-4">
-            Agora é hora de praticar! Tire uma foto da fachada do seu negócio seguindo as dicas acima.
+            {mission
+              ? "Agora é hora de praticar! Siga as dicas acima e envie sua foto."
+              : "Complete a etapa abaixo para concluir a missão."}
           </p>
 
           {/* Upload Area */}
@@ -96,11 +121,12 @@ export default function EntrepreneurMissionDetail() {
         </div>
 
         {/* Complete Button */}
-        <Button 
+        <Button
           className="w-full h-12 rounded-xl text-base font-bold"
-          disabled={!photoUploaded}
+          disabled={!photoUploaded || submitting}
+          onClick={handleComplete}
         >
-          CONCLUIR MISSÃO
+          {submitting ? "Salvando..." : "CONCLUIR MISSÃO"}
         </Button>
       </div>
     </div>

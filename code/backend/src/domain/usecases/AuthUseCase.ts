@@ -48,6 +48,9 @@ export class AuthUseCase {
       model.profile_type,
       model.phone,
       model.avatar_url,
+      model.points,
+      model.level,
+      model.neighborhood,
     )
   }
 }

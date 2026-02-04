@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Search, Filter, MapPin, Navigation, ChevronRight, Plus, Sparkles } from "lucide-react";
+import { Search, Filter, MapPin, Navigation, ChevronRight, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ConsumerNav } from "@/components/layout/ConsumerNav";
 import { BusinessCard } from "@/components/cards/BusinessCard";
 import { CategoryChip } from "@/components/cards/CategoryChip";
 import { Coffee, Utensils, Scissors, ShoppingBag, Wrench, Heart, Cake, Car, Home, MoreHorizontal } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { getAllBusinesses, searchBusinesses } from "@/services/api";
+import type { BusinessModel } from "@backend/data/models/BusinessModel";
 
 import businessBakery from "@/assets/business-bakery.jpg";
 import businessCafe from "@/assets/business-cafe.jpg";
@@ -27,25 +30,32 @@ const moreCategories = [
   { id: "home", label: "Casa", icon: Home },
 ];
 
-const businesses = [
-  { id: "1", name: "Padaria Sabor & Arte", category: "Padaria", rating: 4.8, reviewCount: 127, distance: "350m", isOpen: true, image: businessBakery, lat: -23.55, lng: -46.63 },
-  { id: "2", name: "Café do Bairro", category: "Cafeteria", rating: 4.6, reviewCount: 89, distance: "450m", isOpen: true, image: businessCafe, lat: -23.552, lng: -46.632 },
-  { id: "3", name: "Salão da Maria", category: "Beleza", rating: 4.9, reviewCount: 203, distance: "600m", isOpen: false, image: businessSalon, lat: -23.548, lng: -46.628 },
-  { id: "4", name: "Mercadinho Popular", category: "Mercado", rating: 4.5, reviewCount: 156, distance: "280m", isOpen: true, image: businessMercado, lat: -23.551, lng: -46.635 },
-];
+const defaultImages = [businessBakery, businessCafe, businessSalon, businessMercado];
+function imageFor(business: BusinessModel, index: number) {
+  return business.cover_image_url || defaultImages[index % defaultImages.length];
+}
 
 export default function ConsumerHome() {
+  const { profile } = useAuth();
+  const [businesses, setBusinesses] = useState<BusinessModel[]>([]);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showMoreCategories, setShowMoreCategories] = useState(false);
   const navigate = useNavigate();
 
-  // Mock neighborhood data
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      searchBusinesses(searchQuery, activeCategory !== "all" ? activeCategory : undefined).then(setBusinesses);
+    } else {
+      getAllBusinesses().then(setBusinesses);
+    }
+  }, [searchQuery, activeCategory]);
+
   const neighborhood = {
-    name: "Vila Madalena",
+    name: profile?.neighborhood ?? "Seu Bairro",
     city: "São Paulo",
-    businessCount: 47,
-    discoveredCount: 12,
+    businessCount: businesses.length,
+    discoveredCount: Math.min(businesses.length, 12),
   };
 
   return (
@@ -156,13 +166,7 @@ export default function ConsumerHome() {
                     top: `${25 + (index % 2) * 30}%`,
                   }}
                 >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg ${
-                    business.category === "Padaria" || business.category === "Cafeteria" 
-                      ? "bg-primary" 
-                      : business.category === "Beleza" 
-                        ? "bg-accent" 
-                        : "bg-secondary"
-                  }`}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg bg-primary">
                     <MapPin size={16} className="text-primary-foreground" />
                   </div>
                 </button>
@@ -193,16 +197,16 @@ export default function ConsumerHome() {
           <span className="text-sm text-muted-foreground">{businesses.length} negócios</span>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-          {businesses.map((business) => (
+          {businesses.map((business, index) => (
             <BusinessCard
               key={business.id}
               name={business.name}
               category={business.category}
-              rating={business.rating}
-              reviewCount={business.reviewCount}
-              distance={business.distance}
-              isOpen={business.isOpen}
-              image={business.image}
+              rating={4.5}
+              reviewCount={0}
+              distance="—"
+              isOpen={business.is_active}
+              image={imageFor(business, index)}
               onClick={() => navigate(`/negocio/${business.id}`)}
             />
           ))}

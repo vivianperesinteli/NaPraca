@@ -6,6 +6,9 @@ export interface ProfileModel {
   phone?: string
   profile_type: 'consumer' | 'entrepreneur'
   avatar_url?: string
+  points?: number
+  level?: string
+  neighborhood?: string
   created_at: string
   updated_at: string
 }

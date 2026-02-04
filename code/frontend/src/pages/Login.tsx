@@ -13,20 +13,23 @@ export default function Login() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, isConfigured } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSubmitting(true);
-    const { error: err } = await signIn(email, password);
-    setSubmitting(false);
-    if (err) {
-      setError(err);
-      return;
+    try {
+      const { error: err, profile: p, profileType } = await signIn(email, password);
+      if (err) {
+        setError(err);
+        return;
+      }
+      const isEntrepreneur = p?.profileType === "entrepreneur" || profileType === "entrepreneur";
+      navigate("/boas-vindas", { state: { profileType: isEntrepreneur ? "entrepreneur" : "consumer" } });
+    } finally {
+      setSubmitting(false);
     }
-    const isEntrepreneur = profile?.profileType === "entrepreneur";
-    navigate(isEntrepreneur ? "/empreendedor" : "/consumidor");
   };
 
   return (
@@ -38,6 +41,13 @@ export default function Login() {
       <p className="text-muted-foreground text-center mb-8 text-sm animate-fade-in" style={{ animationDelay: "0.1s" }}>
         Conectando o bairro, fortalecendo o comércio
       </p>
+
+      {!isConfigured && (
+        <div className="w-full max-w-sm mb-4 p-3 rounded-lg bg-amber-100 border border-amber-300 text-amber-800 text-sm">
+          Para o login funcionar, crie o arquivo <strong>.env</strong> na pasta <strong>frontend</strong> com
+          VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY (copie do .env.example).
+        </div>
+      )}
 
       <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 animate-slide-up" style={{ animationDelay: "0.2s" }}>
         {error && (

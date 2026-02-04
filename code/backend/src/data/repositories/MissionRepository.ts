@@ -12,6 +12,17 @@ export interface CreateMissionData {
 export class MissionRepository {
   constructor(private supabase: SupabaseClient) {}
 
+  async getById(id: string): Promise<MissionModel | null> {
+    const { data, error } = await this.supabase
+      .from('missions')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) throw error
+    return data
+  }
+
   async getByEntrepreneurId(entrepreneurId: string): Promise<MissionModel[]> {
     const { data, error } = await this.supabase
       .from('missions')
@@ -36,6 +47,20 @@ export class MissionRepository {
 
     if (error) throw error
     return mission
+  }
+
+  async getNextIncomplete(entrepreneurId: string): Promise<MissionModel | null> {
+    const { data, error } = await this.supabase
+      .from('missions')
+      .select('*')
+      .eq('entrepreneur_id', entrepreneurId)
+      .eq('is_completed', false)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (error) throw error
+    return data
   }
 
   async complete(missionId: string): Promise<MissionModel> {

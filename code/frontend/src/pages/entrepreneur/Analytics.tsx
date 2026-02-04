@@ -1,9 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Calendar, TrendingUp, Eye, MousePointer, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { getBusinessesByEntrepreneur, getEventCountsForEntrepreneur } from "@/services/api";
 
 export default function EntrepreneurAnalytics() {
+  const { profile } = useAuth();
   const [period, setPeriod] = useState("30");
+  const [views, setViews] = useState(0);
+  const [clicks, setClicks] = useState(0);
+  const [favorites, setFavorites] = useState(0);
+
+  const entrepreneurId = profile?.profileType === "entrepreneur" ? profile?.id : null;
+  const periodNum = parseInt(period, 10) || 30;
+
+  useEffect(() => {
+    if (!entrepreneurId) return;
+    getBusinessesByEntrepreneur(entrepreneurId).then((list) => {
+      const ids = list.map((b) => b.id);
+      if (ids.length === 0) return;
+      getEventCountsForEntrepreneur(ids, periodNum).then((counts) => {
+        setViews(counts.views);
+        setClicks(counts.clicks);
+        setFavorites(counts.favorites);
+      });
+    });
+  }, [entrepreneurId, periodNum]);
 
   return (
     <div className="min-h-screen bg-background pb-8">
@@ -39,17 +61,17 @@ export default function EntrepreneurAnalytics() {
         <div className="grid grid-cols-3 gap-3">
           <div className="p-4 rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-center">
             <Eye size={20} className="mx-auto mb-1" />
-            <p className="text-2xl font-bold">127</p>
+            <p className="text-2xl font-bold">{views}</p>
             <p className="text-xs opacity-90">Visualizações</p>
           </div>
           <div className="p-4 rounded-2xl bg-gradient-to-br from-secondary to-secondary/80 text-secondary-foreground text-center">
             <MousePointer size={20} className="mx-auto mb-1" />
-            <p className="text-2xl font-bold">34</p>
+            <p className="text-2xl font-bold">{clicks}</p>
             <p className="text-xs opacity-90">Cliques</p>
           </div>
           <div className="p-4 rounded-2xl bg-gradient-to-br from-destructive to-destructive/80 text-destructive-foreground text-center">
             <Heart size={20} className="mx-auto mb-1" />
-            <p className="text-2xl font-bold">18</p>
+            <p className="text-2xl font-bold">{favorites}</p>
             <p className="text-xs opacity-90">Favoritos</p>
           </div>
         </div>

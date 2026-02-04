@@ -5,6 +5,18 @@ import type { Mission } from '../entities/Mission'
 export class MissionUseCase {
   constructor(private missionRepository: MissionRepository) {}
 
+  async getMissionById(missionId: string): Promise<Mission | null> {
+    const model = await this.missionRepository.getById(missionId)
+    if (!model) return null
+    return this.mapMissionModelToEntity(model)
+  }
+
+  async getNextIncompleteMission(entrepreneurId: string): Promise<Mission | null> {
+    const model = await this.missionRepository.getNextIncomplete(entrepreneurId)
+    if (!model) return null
+    return this.mapMissionModelToEntity(model)
+  }
+
   async getMissionsByEntrepreneur(entrepreneurId: string): Promise<Mission[]> {
     const models = await this.missionRepository.getByEntrepreneurId(entrepreneurId)
     return models.map(model => this.mapMissionModelToEntity(model))

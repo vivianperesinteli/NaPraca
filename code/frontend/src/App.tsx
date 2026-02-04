@@ -26,6 +26,7 @@ import EntrepreneurManagement from "./pages/entrepreneur/Management";
 import Notifications from "./pages/shared/Notifications";
 import Settings from "./pages/shared/Settings";
 import NotFound from "./pages/NotFound";
+import BoasVindas from "./pages/BoasVindas";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
           {/* Auth */}
           <Route path="/" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/boas-vindas" element={<BoasVindas />} />
           
           {/* Consumer Routes */}
           <Route path="/consumidor" element={<ConsumerHome />} />

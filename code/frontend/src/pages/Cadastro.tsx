@@ -19,7 +19,7 @@ export default function Cadastro() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp, isConfigured } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +41,7 @@ export default function Cadastro() {
       setError(err);
       return;
     }
-    navigate(userType === "entrepreneur" ? "/empreendedor" : "/consumidor");
+    navigate("/boas-vindas", { state: { profileType: userType } });
   };
 
   return (
@@ -56,6 +56,13 @@ export default function Cadastro() {
       <div className="flex justify-center mb-6">
         <img src={logo} alt="Na Praça" className="w-20 h-auto" />
       </div>
+
+      {!isConfigured && (
+        <div className="mb-4 p-3 rounded-lg bg-amber-100 border border-amber-300 text-amber-800 text-sm">
+          Para o cadastro funcionar, crie o arquivo <strong>.env</strong> na pasta <strong>frontend</strong> com
+          VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY (copie do .env.example).
+        </div>
+      )}
 
       <div className="mb-6">
         <p className="text-sm text-muted-foreground mb-3 text-center">Selecione seu perfil:</p>

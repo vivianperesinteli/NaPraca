@@ -2,6 +2,7 @@ import { ArrowLeft, Lock, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const rewards = [
   { id: "1", title: "Café Grátis", business: "Café do Bairro", cost: 50, image: "☕", unlocked: true },
@@ -11,7 +12,8 @@ const rewards = [
 ];
 
 export default function ConsumerRewards() {
-  const userPoints = 150;
+  const { profile } = useAuth();
+  const userPoints = profile?.points ?? 0;
 
   return (
     <div className="min-h-screen bg-background pb-8">

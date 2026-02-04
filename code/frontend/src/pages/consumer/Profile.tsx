@@ -1,6 +1,8 @@
-import { Link } from "react-router-dom";
-import { Settings, Heart, Clock, Gift, ChevronRight, Star, Target, TrendingUp, Store, Award, MapPin } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Settings, Heart, Clock, Gift, ChevronRight, Star, Target, TrendingUp, Store, Award, MapPin, LogOut } from "lucide-react";
 import { ConsumerNav } from "@/components/layout/ConsumerNav";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -23,12 +25,20 @@ const recentActivity = [
 ];
 
 export default function ConsumerProfile() {
+  const navigate = useNavigate();
+  const { profile, signOut, displayFullName } = useAuth();
+
+  const handleLogout = () => {
+    signOut();
+    navigate("/");
+  };
+
   const userStats = {
-    points: 150,
+    points: profile?.points ?? 0,
     missions: 8,
     impact: 320,
-    level: "Explorador",
-    neighborhood: "Vila Madalena",
+    level: profile?.level ?? "Iniciante",
+    neighborhood: profile?.neighborhood ?? "Seu Bairro",
     businessesSupported: 12,
   };
 
@@ -37,7 +47,6 @@ export default function ConsumerProfile() {
       {/* Header */}
       <div className="bg-gradient-to-br from-secondary to-secondary/80 px-4 py-8 text-secondary-foreground">
         <div className="flex flex-col items-center">
-          {/* Avatar */}
           <div className="relative mb-4">
             <div className="w-24 h-24 rounded-full bg-primary-foreground/20 flex items-center justify-center text-4xl">
               👤
@@ -46,7 +55,7 @@ export default function ConsumerProfile() {
               <Settings size={14} className="text-primary-foreground" />
             </button>
           </div>
-          <h1 className="font-display font-bold text-xl">Ana Silva</h1>
+          <h1 className="font-display font-bold text-xl">{displayFullName}</h1>
           <div className="flex items-center gap-2 mt-1">
             <Award size={14} className="text-primary" />
             <span className="text-sm opacity-90">{userStats.level}</span>
@@ -155,6 +164,16 @@ export default function ConsumerProfile() {
             );
           })}
         </div>
+
+        {/* Sair */}
+        <Button
+          variant="outline"
+          className="w-full mt-4 h-12 rounded-xl border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          onClick={handleLogout}
+        >
+          <LogOut size={18} className="mr-2" />
+          Sair
+        </Button>
       </div>
 
       <ConsumerNav activeTab="profile" />
