@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Search, Filter, MapPin, Navigation, ChevronRight, Sparkles, Users } from "lucide-react";
+import { Search, Filter, MapPin, Navigation, ChevronRight, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ConsumerNav } from "@/components/layout/ConsumerNav";
 import { BusinessCard } from "@/components/cards/BusinessCard";
@@ -171,23 +171,6 @@ export default function ConsumerHome() {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Comunidade */}
-      <div className="px-4 mb-4">
-        <Link
-          to="/consumidor/comunidade"
-          className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-primary/30 transition-colors"
-        >
-          <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <Users size={24} className="text-secondary" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-display font-bold text-foreground">Comunidade</h3>
-            <p className="text-sm text-muted-foreground">Conecte-se com o bairro e descubra dicas</p>
-          </div>
-          <ChevronRight size={20} className="text-muted-foreground" />
-        </Link>
       </div>
 
       {/* Map Preview */}

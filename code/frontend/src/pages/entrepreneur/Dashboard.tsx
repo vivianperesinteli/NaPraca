@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, ChevronRight, Lightbulb, TrendingUp, PenSquare, BarChart3, Users, Sparkles, Lock } from "lucide-react";
+import { Eye, ChevronRight, Lightbulb, TrendingUp, PenSquare, BarChart3, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EntrepreneurNav } from "@/components/layout/EntrepreneurNav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -165,11 +165,6 @@ export default function EntrepreneurDashboard() {
             <BarChart3 size={24} className="text-primary mb-2" />
             <h4 className="font-semibold text-foreground">Gestão</h4>
             <p className="text-xs text-muted-foreground">Gerencie seu negócio</p>
-          </Link>
-          <Link to="/empreendedor/comunidade" className="p-4 rounded-2xl bg-secondary/10 border border-secondary/20 hover:border-secondary/40 transition-colors">
-            <Users size={24} className="text-secondary mb-2" />
-            <h4 className="font-semibold text-foreground">Comunidade</h4>
-            <p className="text-xs text-muted-foreground">Conecte-se</p>
           </Link>
         </div>
 
