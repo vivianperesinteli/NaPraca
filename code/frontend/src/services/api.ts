@@ -39,12 +39,14 @@ export async function createBusiness(
     email?: string;
     website?: string;
   }
-): Promise<BusinessModel | null> {
-  if (!businessRepo) return null;
+): Promise<{ data: BusinessModel | null; error: string | null }> {
+  if (!businessRepo) return { data: null, error: "Conexão não configurada." };
   try {
-    return await businessRepo.create(entrepreneurId, data);
-  } catch {
-    return null;
+    const business = await businessRepo.create(entrepreneurId, data);
+    return { data: business, error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Erro ao cadastrar negócio.";
+    return { data: null, error: msg };
   }
 }
 
@@ -63,12 +65,14 @@ export async function updateBusiness(
     website: string;
     is_active: boolean;
   }>
-): Promise<BusinessModel | null> {
-  if (!businessRepo) return null;
+): Promise<{ data: BusinessModel | null; error: string | null }> {
+  if (!businessRepo) return { data: null, error: "Conexão não configurada." };
   try {
-    return await businessRepo.update(id, data);
-  } catch {
-    return null;
+    const business = await businessRepo.update(id, data);
+    return { data: business, error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Erro ao atualizar negócio.";
+    return { data: null, error: msg };
   }
 }
 

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Store, MapPin, Phone, Clock, FileText, Plus, Trash2, ChevronRight, Loader2 } from "lucide-react";
+import { ArrowLeft, Store, MapPin, Phone, FileText, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { getBusinessesByEntrepreneur, createBusiness, updateBusiness } from "@/services/api";
 import { geocodeAddress } from "@/services/geocode";
@@ -75,12 +75,18 @@ export default function EntrepreneurBusinessEdit() {
   };
 
   const handleSave = async () => {
-    if (!name.trim() || !category.trim() || !address.trim()) return;
-    if (!entrepreneurId) return;
+    if (!name.trim() || !category.trim() || !address.trim()) {
+      toast.error("Preencha nome, categoria e endereço.");
+      return;
+    }
+    if (!entrepreneurId) {
+      toast.error("Não foi possível identificar seu perfil. Faça login novamente como empreendedor.");
+      return;
+    }
     setSaving(true);
     try {
       if (business) {
-        const updated = await updateBusiness(business.id, {
+        const { data: updated, error: updateError } = await updateBusiness(business.id, {
           name: name.trim(),
           category: category.trim(),
           address: address.trim(),
@@ -91,10 +97,13 @@ export default function EntrepreneurBusinessEdit() {
         });
         if (updated) {
           setBusiness(updated);
+          toast.success("Negócio atualizado! As alterações já aparecem no mapa para os consumidores.");
           navigate("/empreendedor/perfil");
+        } else {
+          toast.error(updateError ?? "Não foi possível salvar. Tente novamente.");
         }
       } else {
-        const created = await createBusiness(entrepreneurId, {
+        const { data: created, error: createError } = await createBusiness(entrepreneurId, {
           name: name.trim(),
           description: description.trim() || "Sem descrição",
           category: category.trim(),
@@ -105,7 +114,10 @@ export default function EntrepreneurBusinessEdit() {
         });
         if (created) {
           setBusiness(created);
+          toast.success("Negócio cadastrado! Ele já aparece no mapa para os consumidores.");
           navigate("/empreendedor/perfil");
+        } else {
+          toast.error(createError ?? "Não foi possível cadastrar. Verifique os dados e tente novamente.");
         }
       }
     } finally {
@@ -192,7 +204,7 @@ export default function EntrepreneurBusinessEdit() {
           <Textarea value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-[100px] rounded-xl resize-none" placeholder="Descreva seu negócio..." />
         </div>
 
-        <Button className="w-full h-12 rounded-xl text-base font-bold" onClick={handleSave} disabled={saving}>
+        <Button type="button" className="w-full h-12 rounded-xl text-base font-bold" onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 size={20} className="animate-spin mx-auto" /> : business ? "SALVAR ALTERAÇÕES" : "CADASTRAR NEGÓCIO"}
         </Button>
       </div>

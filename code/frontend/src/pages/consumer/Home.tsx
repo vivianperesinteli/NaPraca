@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getAllBusinesses, searchBusinesses } from "@/services/api";
 import { MapView, type MapMarker } from "@/components/map/MapView";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { reverseGeocode } from "@/services/geocode";
 import type { BusinessModel } from "@backend/data/models/BusinessModel";
 
 import businessBakery from "@/assets/business-bakery.jpg";
@@ -41,6 +42,7 @@ export default function ConsumerHome() {
   const { profile } = useAuth();
   const { position: userPosition } = useGeolocation();
   const [businesses, setBusinesses] = useState<BusinessModel[]>([]);
+  const [locationLabel, setLocationLabel] = useState<{ neighborhood: string; city: string } | null>(null);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showMoreCategories, setShowMoreCategories] = useState(false);
@@ -65,9 +67,16 @@ export default function ConsumerHome() {
     }
   }, [searchQuery, activeCategory]);
 
+  useEffect(() => {
+    if (!userPosition) return;
+    reverseGeocode(userPosition.lat, userPosition.lng).then((result) => {
+      if (result) setLocationLabel(result);
+    });
+  }, [userPosition?.lat, userPosition?.lng]);
+
   const neighborhood = {
-    name: profile?.neighborhood ?? "Seu Bairro",
-    city: "São Paulo",
+    name: locationLabel?.neighborhood ?? profile?.neighborhood ?? "Seu Bairro",
+    city: locationLabel?.city ?? "—",
     businessCount: businesses.length,
     discoveredCount: Math.min(businesses.length, 12),
   };
