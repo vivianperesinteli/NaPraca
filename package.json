@@ -3,8 +3,12 @@
   "private": true,
   "version": "0.0.1",
   "description": "NaPraça - Backend (Supabase) + Frontend (React)",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "install:all": "npm install",
     "dev": "npm run dev --prefix frontend",
     "build": "npm run build --prefix backend && npm run build --prefix frontend",
     "build:frontend": "npm run build --prefix frontend",
