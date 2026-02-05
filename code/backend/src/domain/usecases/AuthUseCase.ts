@@ -1,6 +1,6 @@
 import type { AuthRepository, SignUpData, SignInData } from '../../data/repositories/AuthRepository'
 import type { ProfileModel } from '../../data/models/ProfileModel'
-import type { Profile } from '../entities/Profile'
+import { Profile } from '../entities/Profile'
 
 export class AuthUseCase {
   constructor(private authRepository: AuthRepository) {}
@@ -9,7 +9,6 @@ export class AuthUseCase {
     const result = await this.authRepository.signUp(data)
     return {
       user: result.user,
-      profile: result.profile ? this.mapProfileModelToEntity(result.profile) : null,
     }
   }
 

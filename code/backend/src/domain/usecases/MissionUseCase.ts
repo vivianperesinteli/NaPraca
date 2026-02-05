@@ -1,6 +1,6 @@
 import type { MissionRepository, CreateMissionData } from '../../data/repositories/MissionRepository'
 import type { MissionModel } from '../../data/models/MissionModel'
-import type { Mission } from '../entities/Mission'
+import { Mission } from '../entities/Mission'
 
 export class MissionUseCase {
   constructor(private missionRepository: MissionRepository) {}

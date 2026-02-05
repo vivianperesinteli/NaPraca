@@ -1,6 +1,6 @@
 import type { BusinessRepository, CreateBusinessData, UpdateBusinessData } from '../../data/repositories/BusinessRepository'
 import type { BusinessModel } from '../../data/models/BusinessModel'
-import type { Business } from '../entities/Business'
+import { Business } from '../entities/Business'
 
 export class BusinessUseCase {
   constructor(private businessRepository: BusinessRepository) {}
@@ -50,13 +50,13 @@ export class BusinessUseCase {
       model.address,
       model.latitude,
       model.longitude,
+      model.is_active,
       model.phone,
       model.whatsapp,
       model.email,
       model.website,
       model.logo_url,
       model.cover_image_url,
-      model.is_active,
     )
   }
 }
