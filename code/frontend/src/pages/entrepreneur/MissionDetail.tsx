@@ -1,16 +1,20 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Play, Upload, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getMissionById, completeMission } from "@/services/api";
 import type { Mission } from "@backend/domain/entities/Mission";
+
+const VIDEO_SRC = "/WhatsApp%20Video%202026-02-04%20at%2023.59.39.mp4";
 
 export default function EntrepreneurMissionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [mission, setMission] = useState<Mission | null>(null);
   const [photoUploaded, setPhotoUploaded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -47,11 +51,27 @@ export default function EntrepreneurMissionDetail() {
         <div>
           <h2 className="font-display font-bold text-foreground mb-3">📹 Assista primeiro</h2>
           <div className="relative aspect-video rounded-2xl bg-muted overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <button className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-                <Play size={28} className="text-primary-foreground ml-1" />
-              </button>
-            </div>
+            <video
+              ref={videoRef}
+              src={VIDEO_SRC}
+              className="absolute inset-0 w-full h-full object-cover"
+              playsInline
+              onPlay={() => setVideoPlaying(true)}
+              onPause={() => setVideoPlaying(false)}
+              onEnded={() => setVideoPlaying(false)}
+            />
+            {!videoPlaying && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <button
+                  type="button"
+                  className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+                  onClick={() => videoRef.current?.play()}
+                  aria-label="Reproduzir vídeo"
+                >
+                  <Play size={28} className="text-primary-foreground ml-1" />
+                </button>
+              </div>
+            )}
             <div className="absolute bottom-4 left-4 right-4 bg-card/90 backdrop-blur rounded-xl p-3">
               <p className="text-sm font-medium text-foreground">Como tirar uma foto profissional</p>
               <p className="text-xs text-muted-foreground">2 min de duração</p>
