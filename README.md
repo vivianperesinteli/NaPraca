@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # NaPraça 🏪
 
 Plataforma de escola de negócios gamificada para microempreendedores e mapa inteligente para consumidores locais.
