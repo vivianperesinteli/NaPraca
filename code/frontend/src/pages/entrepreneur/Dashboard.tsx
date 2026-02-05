@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, ChevronRight, Lightbulb, TrendingUp, PenSquare, BarChart3, Users, Sparkles, Lock } from "lucide-react";
+import { Eye, ChevronRight, Lightbulb, TrendingUp, PenSquare, BarChart3, Sparkles, Lock, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EntrepreneurNav } from "@/components/layout/EntrepreneurNav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -166,10 +166,20 @@ export default function EntrepreneurDashboard() {
             <h4 className="font-semibold text-foreground">Gestão</h4>
             <p className="text-xs text-muted-foreground">Gerencie seu negócio</p>
           </Link>
-          <Link to="/empreendedor/comunidade" className="p-4 rounded-2xl bg-secondary/10 border border-secondary/20 hover:border-secondary/40 transition-colors">
-            <Users size={24} className="text-secondary mb-2" />
-            <h4 className="font-semibold text-foreground">Comunidade</h4>
-            <p className="text-xs text-muted-foreground">Conecte-se</p>
+          <Link
+            to="/empreendedor/assistente"
+            className="p-4 rounded-2xl bg-gradient-to-br from-accent to-primary border-2 border-primary/30 hover:border-primary/50 shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all hover:scale-[1.02]"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
+                <Bot size={22} className="text-primary-foreground" />
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-primary-foreground/20 text-[10px] font-bold text-primary-foreground uppercase tracking-wide">
+                Novo
+              </span>
+            </div>
+            <h4 className="font-display font-bold text-primary-foreground">Assistente</h4>
+            <p className="text-xs text-primary-foreground/80">Converse e tire dúvidas</p>
           </Link>
         </div>
 
@@ -181,7 +191,7 @@ export default function EntrepreneurDashboard() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="font-display font-bold text-muted-foreground">Trilha IA de Conteúdo</h3>
+                <h3 className="font-display font-bold text-muted-foreground">Trilha personalizada</h3>
                 <span className="px-2 py-0.5 rounded-md bg-muted-foreground/20 text-xs font-medium text-muted-foreground">
                   Bloqueado
                 </span>

@@ -286,3 +286,46 @@ export async function recordBusinessEvent(
     // ignore
   }
 }
+
+// --- Assistente do empreendedor (histórico no Supabase)
+
+export interface AssistantMessageRow {
+  id: string;
+  profile_id: string;
+  role: string;
+  content: string;
+  created_at: string;
+}
+
+/** Busca o histórico de mensagens do assistente do perfil logado. */
+export async function getAssistantMessages(
+  profileId: string
+): Promise<AssistantMessageRow[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("assistant_messages")
+    .select("id, profile_id, role, content, created_at")
+    .eq("profile_id", profileId)
+    .order("created_at", { ascending: true });
+  if (error) return [];
+  return (data ?? []) as AssistantMessageRow[];
+}
+
+/** Insere uma mensagem no histórico do assistente. Retorna erro se falhar (ex: RLS). */
+export async function insertAssistantMessage(
+  profileId: string,
+  role: "user" | "assistant",
+  content: string
+): Promise<{ id: string; created_at: string } | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("assistant_messages")
+    .insert({ profile_id: profileId, role, content })
+    .select("id, created_at")
+    .single();
+  if (error) {
+    console.warn("[Assistant] insertAssistantMessage failed:", error.message, error.code);
+    return null;
+  }
+  return data as { id: string; created_at: string };
+}

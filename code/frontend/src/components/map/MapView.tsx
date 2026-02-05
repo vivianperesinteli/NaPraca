@@ -51,6 +51,17 @@ interface MapViewProps {
   onSingleMarkerMove?: (lat: number, lng: number) => void;
 }
 
+function MapResizeFix() {
+  const map = useMap();
+  useEffect(() => {
+    const t = setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+    return () => clearTimeout(t);
+  }, [map]);
+  return null;
+}
+
 function FitBounds({ markers, userLocation }: { markers?: MapMarker[]; userLocation?: { lat: number; lng: number } | null }) {
   const map = useMap();
   const done = useRef(false);
@@ -96,7 +107,7 @@ export function MapView({
     hasUserLoc ? [userLocation.lat, userLocation.lng] : singleMarker ? [singleMarker.lat, singleMarker.lng] : markers[0] ? [markers[0].lat, markers[0].lng] : center;
 
   return (
-    <div className={className} style={{ height }}>
+    <div className={className} style={{ height, minHeight: 300 }}>
       <MapContainer
         center={mapCenter}
         zoom={zoom}
@@ -107,6 +118,7 @@ export function MapView({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapResizeFix />
         {!singleMarker && (markers.length > 0 || userLocation) && (
           <FitBounds markers={markers} userLocation={userLocation} />
         )}

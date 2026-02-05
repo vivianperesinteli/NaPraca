@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { ArrowLeft, Search, Plus, MessageCircle, Heart, TrendingUp, Crown, Store, Users, ChevronRight } from "lucide-react";
+import { Search, Plus, MessageCircle, Heart, TrendingUp, Crown, Store, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
+import { ConsumerNav } from "@/components/layout/ConsumerNav";
+import { EntrepreneurNav } from "@/components/layout/EntrepreneurNav";
 import { cn } from "@/lib/utils";
 
 const topCreators = [
@@ -73,19 +75,23 @@ const categoryColors = {
   "Receita": "bg-success/10 text-success",
 };
 
-export default function EntrepreneurCommunity() {
+interface CommunityProps {
+  /** Link "voltar" (ex: /consumidor ou /empreendedor) */
+  backTo?: string;
+}
+
+export default function EntrepreneurCommunity({ backTo = "/empreendedor" }: CommunityProps) {
   const [activeTab, setActiveTab] = useState<"forum" | "tips" | "support">("forum");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const isConsumer = backTo === "/consumidor";
+
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-4">
-        <div className="flex items-center gap-4 mb-4">
-          <Link to="/empreendedor" className="text-secondary hover:text-secondary/80 transition-colors">
-            <ArrowLeft size={24} />
-          </Link>
-          <h1 className="font-display font-bold text-xl text-foreground">Comunidade</h1>
+        <div className="mb-4">
+          <h1 className="font-display font-bold text-xl text-foreground">Praça</h1>
         </div>
 
         {/* Search */}
@@ -236,13 +242,22 @@ export default function EntrepreneurCommunity() {
         ))}
       </div>
 
-      {/* FAB */}
-      <Link 
-        to="/empreendedor/postar"
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform"
-      >
-        <Plus size={24} />
-      </Link>
+      {/* FAB - apenas para empreendedor */}
+      {!isConsumer && (
+        <Link 
+          to="/empreendedor/postar"
+          className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform z-40"
+        >
+          <Plus size={24} />
+        </Link>
+      )}
+
+      {/* Menu: Início, Mapa, Praça, Missões, Perfil */}
+      {isConsumer ? (
+        <ConsumerNav activeTab="praca" />
+      ) : (
+        <EntrepreneurNav activeTab="praca" />
+      )}
     </div>
   );
 }
