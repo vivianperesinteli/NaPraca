@@ -10,8 +10,24 @@
 
 ### 1. Instalar Dependências
 
+**IMPORTANTE: Use apenas npm (não use pnpm, yarn ou bun)**
+
+Na raiz do diretório `code/`:
+
 ```bash
-cd napraca
+cd code
+npm run install:all
+```
+
+Este comando instala as dependências na raiz, backend e frontend automaticamente.
+
+**Alternativa (instalação manual em cada pasta):**
+```bash
+cd code
+npm install
+cd backend
+npm install
+cd ../frontend
 npm install
 ```
 
@@ -46,7 +62,7 @@ Assim, o login funciona imediatamente após o cadastro.
 
 ### 4. Criar Arquivo .env
 
-Na raiz do projeto `napraca/`, crie um arquivo `.env` com o seguinte conteúdo:
+Na pasta `code/frontend/`, crie um arquivo `.env` com o seguinte conteúdo:
 
 ```env
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
@@ -60,11 +76,14 @@ VITE_GOOGLE_MAPS_API_KEY=sua_chave_do_google_maps_aqui
 
 ### 5. Executar o Projeto
 
+Na raiz do diretório `code/`:
+
 ```bash
+cd code
 npm run dev
 ```
 
-O projeto estará disponível em `http://localhost:5173`
+O projeto estará disponível em `http://localhost:5173` (ou a porta que o Vite indicar)
 
 ## ✅ Verificação
 

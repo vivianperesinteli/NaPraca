@@ -29,3 +29,7 @@ dist-ssr
 .env.production.local
 .env.development.local
 
+# Package manager lock files (usando apenas npm)
+pnpm-lock.yaml
+yarn.lock
+bun.lockb
