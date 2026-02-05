@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Target, User } from "lucide-react";
+import { Home, Briefcase, Target, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { id: "home", label: "Home", icon: Home, href: "/empreendedor" },
+  { id: "negocios", label: "Negócios", icon: Briefcase, href: "/empreendedor/meu-negocio" },
   { id: "missions", label: "Missões", icon: Target, href: "/empreendedor/missoes" },
   { id: "profile", label: "Perfil", icon: User, href: "/empreendedor/perfil" },
 ];
