@@ -26,6 +26,10 @@ code/
 └── README.md
 ```
 
+## ⚠️ IMPORTANTE: Use apenas npm
+
+Este projeto usa **apenas npm** como gerenciador de pacotes. Não use pnpm, yarn ou bun.
+
 ## Início rápido
 
 ### 1. Variáveis de ambiente
@@ -94,3 +98,4 @@ npm run build
 - [Schema do Banco de Dados](./DATABASE_SCHEMA.md)
 - [Documentação Técnica](./README_TECNICO.md)
 - [Setup](./SETUP.md)
+- [Comandos Git](./COMANDOS_GIT.md) - **Comandos para você e sua amiga clonar/commitar**

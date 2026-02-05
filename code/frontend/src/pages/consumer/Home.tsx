@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Search, Filter, MapPin, Navigation, ChevronRight, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -72,7 +72,7 @@ export default function ConsumerHome() {
     reverseGeocode(userPosition.lat, userPosition.lng).then((result) => {
       if (result) setLocationLabel(result);
     });
-  }, [userPosition?.lat, userPosition?.lng]);
+  }, [userPosition]);
 
   const neighborhood = {
     name: locationLabel?.neighborhood ?? profile?.neighborhood ?? "Seu Bairro",

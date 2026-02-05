@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -142,36 +142,33 @@ export default function EntrepreneurBusinessEdit() {
     });
   }, [entrepreneurId]);
 
-  const loadCatalog = () => {
+  const loadCatalog = useCallback(() => {
     if (!business?.id) return;
     getCatalogByBusiness(business.id).then(setCatalog);
-  };
+  }, [business?.id]);
 
-  const loadPosts = () => {
+  const loadPosts = useCallback(() => {
     if (!business?.id) return;
     getPostsByBusiness(business.id).then(setPosts);
-  };
+  }, [business?.id]);
 
-  const loadReviews = () => {
+  const loadReviews = useCallback(() => {
     if (!business?.id) return;
     getReviewsByBusiness(business.id).then(setReviews);
     getReviewStatsByBusiness(business.id).then(setReviewStats);
-  };
+  }, [business?.id]);
 
   useEffect(() => {
-    if (!business?.id) return;
     loadCatalog();
-  }, [business?.id]);
+  }, [loadCatalog]);
 
   useEffect(() => {
-    if (!business?.id) return;
     loadPosts();
-  }, [business?.id]);
+  }, [loadPosts]);
 
   useEffect(() => {
-    if (!business?.id) return;
     loadReviews();
-  }, [business?.id]);
+  }, [loadReviews]);
 
   const handleGeocode = async () => {
     if (!address.trim()) return;

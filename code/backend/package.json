@@ -7,13 +7,19 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint . --ext ts --max-warnings 0"
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.32.0",
     "@types/node": "^20.10.0",
-    "typescript": "^5.2.2"
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.32.0",
+    "globals": "^15.15.0",
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^8.38.0"
   }
 }

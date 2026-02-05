@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Store, BarChart3, Users, HelpCircle, Settings, LogOut, ChevronRight, Target, MessageSquare, Package } from "lucide-react";
+import { Store, BarChart3, HelpCircle, Settings, LogOut, ChevronRight, Target, MessageSquare, Package } from "lucide-react";
 import { EntrepreneurNav } from "@/components/layout/EntrepreneurNav";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +9,6 @@ import { getBusinessesByEntrepreneur, getMissionsByEntrepreneur } from "@/servic
 const menuItems = [
   { id: "business", label: "Meu Negócio", icon: Store, href: "/empreendedor/negocio", color: "text-primary" },
   { id: "stats", label: "Estatísticas", icon: BarChart3, href: "/empreendedor/analytics", color: "text-secondary" },
-  { id: "community", label: "Comunidade", icon: Users, href: "/empreendedor/comunidade", color: "text-success" },
   { id: "help", label: "Ajuda", icon: HelpCircle, href: "#", color: "text-accent" },
   { id: "settings", label: "Configurações", icon: Settings, href: "/configuracoes", color: "text-muted-foreground" },
 ];
