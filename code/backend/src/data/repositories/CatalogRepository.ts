@@ -10,7 +10,7 @@ export interface CreateCatalogItemData {
   position?: number
 }
 
-export interface UpdateCatalogItemData extends Partial<CreateCatalogItemData> {}
+export type UpdateCatalogItemData = Partial<CreateCatalogItemData>
 
 export class CatalogRepository {
   constructor(private supabase: SupabaseClient) {}
