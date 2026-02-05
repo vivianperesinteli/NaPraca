@@ -35,6 +35,32 @@ Para que o usuário possa **entrar na conta logo após o cadastro**, sem precisa
 
 Assim, o login funciona imediatamente após o cadastro.
 
+#### Se o email de confirmação chega vazio (manter confirmação ativa)
+
+Se **"Confirm email"** estiver ativo e o email chegar em branco, configure o template no Supabase:
+
+1. No [Supabase Dashboard](https://app.supabase.com), abra seu projeto.
+2. Vá em **Authentication** → **URL Configuration**:
+   - **Site URL**: URL da sua app (ex.: `http://localhost:8080` em dev ou `https://seudominio.com` em produção).
+   - **Redirect URLs**: adicione as URLs permitidas após o clique no link do email, por exemplo:
+     - `http://localhost:8080/**`
+     - `https://seudominio.com/**`
+3. Vá em **Authentication** → **Email Templates** → **Confirm signup**.
+4. Em **Subject**, use por exemplo: `Confirmar cadastro - NaPraça`.
+5. Em **Body (HTML)**, cole um template válido. Use **apenas** as variáveis oficiais (sem filtros como `default`). Exemplo que funciona:
+
+```html
+<h2>Confirmar seu cadastro</h2>
+<p>Olá! Você se cadastrou no NaPraça.</p>
+<p>Clique no link abaixo para confirmar seu email:</p>
+<p><a href="{{ .ConfirmationURL }}">Confirmar meu email</a></p>
+<p>Se você não criou esta conta, ignore este email.</p>
+```
+
+6. Salve. O link do email passará a redirecionar para a **Site URL** / **Redirect URLs** após a confirmação.
+
+**Importante:** não use sintaxe inválida no template (ex.: `{{ .Data.x | default: "y" }}`). Use apenas variáveis como `{{ .ConfirmationURL }}`, `{{ .Email }}`, `{{ .SiteURL }}`.
+
 ### 3. Configurar Google Maps API
 
 1. Acesse o [Google Cloud Console](https://console.cloud.google.com)

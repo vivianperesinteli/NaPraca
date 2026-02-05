@@ -16,4 +16,4 @@ Armazena informações dos negócios cadastrados pelos empreendedores.
 
 Armazena as missões gamificadas para os empreendedores.
 
-Consulte o arquivo na raiz do repositório `code/DATABASE_SCHEMA.md` para o script SQL completo e políticas RLS.
+Consulte o arquivo na raiz do repositório `DATABASE_SCHEMA.md` para o script SQL completo e políticas RLS.

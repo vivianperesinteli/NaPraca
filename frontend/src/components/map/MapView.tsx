@@ -73,7 +73,9 @@ function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number
       onMapClick(e.latlng.lat, e.latlng.lng);
     };
     map.on("click", handler);
-    return () => map.off("click", handler);
+    return () => {
+      map.off("click", handler);
+    };
   }, [map, onMapClick]);
   return null;
 }

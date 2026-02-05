@@ -25,7 +25,7 @@ export default function Login() {
         setError(err);
         return;
       }
-      const isEntrepreneur = p?.profileType === "entrepreneur" || profileType === "entrepreneur";
+      const isEntrepreneur = p?.profile_type === "entrepreneur" || profileType === "entrepreneur";
       navigate("/boas-vindas", { state: { profileType: isEntrepreneur ? "entrepreneur" : "consumer" } });
     } finally {
       setSubmitting(false);

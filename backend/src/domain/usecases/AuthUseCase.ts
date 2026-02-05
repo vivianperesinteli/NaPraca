@@ -8,7 +8,7 @@ export class AuthUseCase {
     const result = await this.authRepository.signUp(data)
     return {
       user: result.user,
-      profile: result.profile || null,
+      profile: null,
     }
   }
 

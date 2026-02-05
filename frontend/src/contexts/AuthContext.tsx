@@ -177,6 +177,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: CONFIG_ERROR };
     }
     try {
+      const redirectTo =
+        typeof window !== "undefined" ? `${window.location.origin}/login` : undefined;
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -186,6 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             profile_type: data.profileType,
             phone: data.phone,
           },
+          emailRedirectTo: redirectTo,
         },
       });
       if (error) return { error: getErrorMessage(error) };
