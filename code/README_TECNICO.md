@@ -1,6 +1,6 @@
 # NaPraça - Documentação Técnica
 
-## 📋 Visão Geral
+## 📋 Visão Geral 
 
 NaPraça é uma plataforma web responsiva (Mobile-First) que funciona como uma "escola de negócios" gamificada para microempreendedores e um mapa inteligente para consumidores locais. O projeto foi desenvolvido seguindo os princípios da **Clean Architecture** com padrão **MVVM**.
 
